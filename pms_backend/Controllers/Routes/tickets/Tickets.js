@@ -72,8 +72,7 @@ router.patch('/pay/:id', verifyToken, async (req, res) => {
         // Get user email for notification
         const user = await User.findById(ticket.user);
         if (user && user.email) {
-            // Send email notification
-            try {
+
                 await sendEmail(user.email, {
                     type: 'ALERT_MESSAGE',
                     message: `
@@ -89,10 +88,6 @@ router.patch('/pay/:id', verifyToken, async (req, res) => {
                         <p>Thank you for using our parking service!</p>
                     `
                 });
-            } catch (emailError) {
-                console.error('Failed to send email notification:', emailError);
-                // Continue with the process even if email fails
-            }
         }
 
         res.status(200).json({ message: '✅ Ticket paid successfully', ticket });
