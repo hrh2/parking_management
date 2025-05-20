@@ -16,11 +16,12 @@ export function SignUp() {
   const [loader, setLoader] = useState(false);
 
   const [data, setData] = useState({
+    firstName: "",
+    lastName: "",
     email: '',
     phone: '',
     password: '',
     confirmPassword: '',
-    fullName: '',
   });
 
 
@@ -69,21 +70,31 @@ export function SignUp() {
             <Typography variant="paragraph" color="blue-gray" className="text-lg font-normal">Enter your information to register.</Typography>
           </div>
           <form onSubmit={handleSubmit} className="mb-2 mx-auto w-80 max-w-screen-lg lg:w-1/2">
-            <div className="mb-1 flex flex-col gap-6">
+            <div className="mb-1 flex flex-col gap-3">
               <Typography variant="small" color="blue-gray" className="-mb-3 font-medium">
-                Your Full Name
+                First Name
               </Typography>
               <Input
                   size="lg"
-                  placeholder="Mukahigiro Anna"
+                  placeholder="Anna"
                   onChange={handleOnChange}
-                  name="fullName"
+                  name="firstName"
                   type="text"
                   className="!border-t-blue-gray-200 focus:!border-t-gray-900"
               />
-            </div>
 
-            <div className="mb-1 flex flex-col gap-6">
+              <Typography variant="small" color="blue-gray" className="-mb-3 font-medium">
+                Last Name
+              </Typography>
+              <Input
+                  size="lg"
+                  placeholder="Mukahigiro"
+                  onChange={handleOnChange}
+                  name="lastName"
+                  type="text"
+                  className="!border-t-blue-gray-200 focus:!border-t-gray-900"
+              />
+
               <Typography variant="small" color="blue-gray" className="-mb-3 font-medium">
                 Your Email
               </Typography>
@@ -96,9 +107,7 @@ export function SignUp() {
 
                   className="!border-t-blue-gray-200 focus:!border-t-gray-900"
               />
-            </div>
 
-            <div className="mb-1 flex flex-col gap-6">
               <Typography variant="small" color="blue-gray" className="-mb-3 font-medium">
                 Your Phone Number
               </Typography>
@@ -110,9 +119,7 @@ export function SignUp() {
                   type="tel"
                   className="!border-t-blue-gray-200 focus:!border-t-gray-900"
               />
-            </div>
 
-            <div className="mb-1 flex flex-col gap-6">
               <Typography variant="small" color="blue-gray" className="-mb-3 font-medium">
                 Your Password
               </Typography>
@@ -127,7 +134,6 @@ export function SignUp() {
               <Typography variant="small" color="gray" className="text-xs mt-[-12px]">
                 Must be 8+ characters with uppercase, lowercase, number, and special character.
               </Typography>
-            </div>
 
             <div className="mb-1 flex flex-col gap-6">
               <Typography variant="small" color="blue-gray" className="-mb-3 font-medium">
@@ -163,7 +169,7 @@ export function SignUp() {
                 required
                 containerProps={{ className: "-ml-2.5" }}
             />
-
+            </div>
             <Button className="mt-6" fullWidth type="submit" disabled={loader}>
               {loader ? "Registering..." : "Register Now"}
             </Button>

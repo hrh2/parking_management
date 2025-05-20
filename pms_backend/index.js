@@ -21,6 +21,7 @@ const parkingSlotRouter = require('./Controllers/Routes/parkingSlots/Slots');
 const bookingRouter = require('./Controllers/Routes/booking/Bookings');
 const vehicleRouter = require('./Controllers/Routes/vehicles/Vehicles');
 const ticketsRouter = require('./Controllers/Routes/tickets/Tickets');
+const adminReportsRouter = require('./Controllers/Routes/admin/Reports');
 
 
 // Initialize express app
@@ -30,7 +31,15 @@ const app = express();
 // Middleware
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
-app.use(cors());
+
+const corsOptions = {
+    origin: ['http://localhost:5173', 'http://localhost:5174'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE','PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true, // If you want to allow cookies
+};
+
+app.use(cors(corsOptions));
 
 // Routes
 app.use('/v1/api/auth/login',loginRouter);
@@ -41,6 +50,7 @@ app.use('/v1/api/slots',parkingSlotRouter);
 app.use('/v1/api/bookings',bookingRouter);
 app.use('/v1/api/vehicles',vehicleRouter);
 app.use('/v1/api/tickets',ticketsRouter);
+app.use('/v1/api/admin/reports',adminReportsRouter);
 app.use('/v1/api-docs',swaggerUI.serve,swaggerUI.setup(annotations))
 
 // Root Endpoint
@@ -60,4 +70,3 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Listening on port http://localhost:${PORT}`);
 });
-

@@ -7,6 +7,7 @@ const {User} = require("../../../Models/User");
 const {extractUserIdFromToken} = require("../../Utils/extractors");
 const {isAdmin} = require("../../Utils/helper");
 const {sendEmail} = require("../../Utils/Mailer");
+const mongoose = require("mongoose");
 const router = require('express').Router();
 
 
@@ -48,9 +49,25 @@ router.post('/', verifyToken, async (req, res) => {
 });
 
 
-router.get('/', verifyToken, async (req, res) => {
+router.get('/',verifyToken,  async (req, res) => {
     try {
-        const bookings = await Booking.findAll({ order: [['createdAt', 'DESC']] });
+        if (!isAdmin(req)) {
+            return res.status(403).json({ message: 'Only admins can get all  bookings.' });
+        }
+        const bookings = await Booking.find().populate('slot vehicle user');
+
+        res.status(200).json(bookings);
+    } catch (err) {
+        res.status(500).json({ message: 'Internal server error', error: err.message });
+    }
+});
+
+router.get('/my',verifyToken,  async (req, res) => {
+    try {
+        userId = extractUserIdFromToken(req);
+
+        const bookings = await Booking.find({user: userId}).populate('slot vehicle');
+
         res.status(200).json(bookings);
     } catch (err) {
         res.status(500).json({ message: 'Internal server error', error: err.message });
@@ -59,8 +76,13 @@ router.get('/', verifyToken, async (req, res) => {
 
 router.patch('/approve/:id', verifyToken, async (req, res) => {
     try {
+
         if (!isAdmin(req)) {
             return res.status(403).json({ message: 'Only admins can approve/reject bookings.' });
+        }
+
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(400).json({ message: 'Invalid Booking ID' });
         }
 
         const booking = await Booking.findById(req.params.id);
@@ -112,6 +134,10 @@ router.patch('/reject/:id', verifyToken, async (req, res) => {
             return res.status(403).json({ message: 'Only admins can approve/reject bookings.' });
         }
 
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(400).json({ message: 'Invalid Booking ID' });
+        }
+
         const booking = await Booking.findById(req.params.id);
         if (!booking) return res.status(404).json({ message: 'Booking not found' });
 
@@ -151,6 +177,10 @@ router.patch('/complete/:id', verifyToken, async (req, res) => {
             return res.status(403).json({ message: 'Only admins can complete bookings.' });
         }
 
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(400).json({ message: 'Invalid Booking ID' });
+        }
+
         const booking = await Booking.findById(req.params.id);
         if (!booking) return res.status(404).json({ message: 'Booking not found' });
 
@@ -161,6 +191,10 @@ router.patch('/complete/:id', verifyToken, async (req, res) => {
         // Set the end time to now
         booking.endTime = new Date();
         booking.status = 'COMPLETED';
+
+        if(booking.startTime > new Date().getTime()) {
+            return res.status(400).json({ message: 'You can not complete the booking request which is not used. Start Time not yet reached '+booking.startTime.toLocaleString() });
+        }
         await booking.save();
 
         // Make slot available again

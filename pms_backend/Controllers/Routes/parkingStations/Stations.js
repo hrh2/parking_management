@@ -4,6 +4,7 @@ const {extractRoledFromToken} = require("../../Utils/extractors");
 const {ParkingStation} = require("../../../Models/ParkingStation");
 const {ParkingSlot} = require("../../../Models/ParkingSlot");
 const {isAdmin} = require("../../Utils/helper");
+const mongoose = require("mongoose");
 const router = express.Router();
 
 
@@ -71,6 +72,11 @@ router.get('/', verifyToken, async (req, res) => {
 // 3. GET /stations/:id - Get specific station with its slots
 router.get('/:id', verifyToken, async (req, res) => {
     try {
+
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(400).json({ message: 'Invalid Station ID' });
+        }
+
         const station = await ParkingStation.findById(req.params.id)
             .populate({
                 path: 'slots',
@@ -92,6 +98,10 @@ router.put('/:id', verifyToken, async (req, res) => {
     try {
         if (!isAdmin(req)) {
             return res.status(403).json({ message: 'Only admins can update stations.' });
+        }
+
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(400).json({ message: 'Invalid Station ID' });
         }
 
         const { name, location, ratePerMinute } = req.body;
@@ -118,6 +128,10 @@ router.delete('/:id', verifyToken, async (req, res) => {
     try {
         if (!isAdmin(req)) {
             return res.status(403).json({ message: 'Only admins can delete stations.' });
+        }
+
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(400).json({ message: 'Invalid Station ID' });
         }
 
         const station = await ParkingStation.findById(req.params.id);

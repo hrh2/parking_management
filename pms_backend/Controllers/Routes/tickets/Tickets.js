@@ -21,11 +21,11 @@ router.get('/', verifyToken, async (req, res) => {
     }
 });
 
-router.get('/my', verifyToken, async (req, res) => {
+router.get('/my',verifyToken,  async (req, res) => {
     try {
         const userId = extractUserIdFromToken(req);
 
-        const tickets = await Ticket.find({ user: userId }).sort({ createdAt: -1 });
+        const tickets = await Ticket.find({ user: userId }).populate('user slot vehicle').sort({ createdAt: -1 });
 
         res.status(200).json(tickets);
     } catch (err) {
@@ -48,6 +48,11 @@ router.get('/my-bookings', verifyToken, async (req, res) => {
 
 router.patch('/pay/:id', verifyToken, async (req, res) => {
     try {
+
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(400).json({ message: 'Invalid Ticket ID' });
+        }
+
         const ticket = await Ticket.findById(req.params.id);
         if (!ticket) return res.status(404).json({ message: 'Ticket not found' });
 
@@ -79,7 +84,7 @@ router.patch('/pay/:id', verifyToken, async (req, res) => {
                             <li>Start Time: ${new Date(ticket.startTime).toLocaleString()}</li>
                             <li>End Time: ${new Date(ticket.endTime).toLocaleString()}</li>
                             <li>Duration: ${ticket.durationMinutes} minutes</li>
-                            <li>Amount Paid: $${ticket.amount.toFixed(2)}</li>
+                            <li>Amount Paid: $${ticket.amount.toFixed(2)} FRW</li>
                         </ul>
                         <p>Thank you for using our parking service!</p>
                     `

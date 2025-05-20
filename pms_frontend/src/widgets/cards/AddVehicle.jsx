@@ -1,17 +1,18 @@
 import React, { useState } from "react";
 import { Input, Button, Typography } from "@material-tailwind/react";
-import sendData from "@/utils/sendData"; // adjust the path if needed
+import {servers} from "@/configs/server_api.js";
+import {sendData} from "@/utils/helpers.js"; // adjust if needed
 
 export function AddVehicleForm() {
     const [formData, setFormData] = useState({
         licensePlate: "",
         model: "",
         color: "",
-        sits: "",
-        ownerId: ""
+        sits: ""
     });
 
     const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState("");
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -24,33 +25,47 @@ export function AddVehicleForm() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const { licensePlate, model, color, sits, ownerId } = formData;
+        const { licensePlate, model, color, sits } = formData;
 
-        if (!licensePlate || !model || !color || !sits || !ownerId) {
-            console.error("All fields are required.");
+        if (!licensePlate || !model || !color || !sits) {
+            setMessage("All fields are required.");
+            return;
+        }
+
+        const token = localStorage.getItem("pms_auth_token"); // or sessionStorage if you use that
+
+        if (!token) {
+            setMessage("Authentication token not found.");
             return;
         }
 
         setLoading(true);
+        setMessage("");
+
         try {
-            const res = await sendData("/vehicles", {
+            const res = await sendData(`${servers.default}/vehicles`, {
                 licensePlate,
                 model,
                 color,
-                sits,
-                ownerId
-            });
-            console.log("Vehicle added successfully:", res);
-            // Optionally reset form
-            setFormData({
-                licensePlate: "",
-                model: "",
-                color: "",
-                sits: "",
-                ownerId: ""
-            });
+                sits: parseInt(sits)
+            }, token);
+
+            if (res?.error) {
+                setMessage(res.error);
+            } else {
+                setMessage(res.message || "Vehicle added successfully.");
+                console.log("New Vehicle:", res.data.vehicle);
+
+                // Reset form
+                setFormData({
+                    licensePlate: "",
+                    model: "",
+                    color: "",
+                    sits: ""
+                });
+            }
         } catch (err) {
-            console.error("Error adding vehicle:", err);
+            setMessage("An error occurred.");
         } finally {
             setLoading(false);
         }
@@ -61,8 +76,8 @@ export function AddVehicleForm() {
             onSubmit={handleSubmit}
             className="p-6 bg-white rounded-xl shadow-md w-full max-w-xl mx-auto"
         >
-            <Typography variant="h5" className="mb-4">
-                Add Vehicle
+            <Typography variant="h5" className="mb-4 text-center">
+                Add Your Vehicle
             </Typography>
 
             <div className="grid gap-4">
@@ -91,15 +106,19 @@ export function AddVehicleForm() {
                     value={formData.sits}
                     onChange={handleChange}
                 />
-                <Input
-                    label="Owner ID"
-                    name="ownerId"
-                    value={formData.ownerId}
-                    onChange={handleChange}
-                />
+
                 <Button type="submit" disabled={loading}>
                     {loading ? "Adding..." : "Add Vehicle"}
                 </Button>
+
+                {message && (
+                    <Typography
+                        variant="small"
+                        color={message.includes("success") ? "green" : "red"}
+                    >
+                        {message}
+                    </Typography>
+                )}
             </div>
         </form>
     );

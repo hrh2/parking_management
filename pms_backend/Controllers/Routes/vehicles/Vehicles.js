@@ -2,8 +2,8 @@ const express = require('express');
 const {verifyToken} = require("../../../Middlewares/verifyToken");
 const {extractUserIdFromToken} = require("../../Utils/extractors");
 const {Vehicle} = require("../../../Models/Vehicle");
+const mongoose = require("mongoose");
 const router = express.Router();
-
 
 // POST /vehicles - Add a new vehicle
 router.post('/', verifyToken, async (req, res) => {
@@ -46,6 +46,11 @@ router.get('/', verifyToken, async (req, res) => {
 // GET /vehicles/:id - Get a single vehicle
 router.get('/:id', verifyToken, async (req, res) => {
     try {
+
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(400).json({ message: 'Invalid Vehicle ID' });
+        }
+
         const vehicle = await Vehicle.findById(req.params.id);
         if (!vehicle) {
             return res.status(404).json({ message: 'Vehicle not found.' });
@@ -59,6 +64,10 @@ router.get('/:id', verifyToken, async (req, res) => {
 // PUT /vehicles/:id - Update a vehicle
 router.put('/:id', verifyToken, async (req, res) => {
     try {
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(400).json({ message: 'Invalid Vehicle ID' });
+        }
+
         const ownerId = extractUserIdFromToken(req);
         const { licensePlate, model, color, sits } = req.body;
 
@@ -89,6 +98,10 @@ router.delete('/:id', verifyToken, async (req, res) => {
     try {
         const ownerId = extractUserIdFromToken(req);
         const vehicle = await Vehicle.findById(req.params.id);
+
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(400).json({ message: 'Invalid Vehicle ID' });
+        }
 
         if (!vehicle) {
             return res.status(404).json({ message: 'Vehicle not found.' });

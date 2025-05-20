@@ -10,6 +10,17 @@ import { Home, Profile, Tables, Notifications } from "@/pages/dashboard";
 import {Otp, SignIn, SignUp} from "@/pages/auth";
 import ResetPassword from "@/pages/auth/ResetPassword.jsx";
 import{ StdHome,Booking,Stations} from "@/pages/standard";
+import {ClientVehiclesList} from "@/pages/standard/ClientVehiclesList.jsx";
+import StationList from "@/pages/standard/StationList.jsx";
+import AvailableSlotsTable from "@/pages/standard/AvailableSlotsTable.jsx";
+import BookingRequests from "@/pages/dashboard/BookingRequests.jsx";
+import {LuCircleParking, LuTicketsPlane} from "react-icons/lu";
+import {IoCarSportSharp} from "react-icons/io5";
+import {RxSpaceEvenlyVertically} from "react-icons/rx";
+import {FaRegBookmark} from "react-icons/fa";
+import TicketList from "@/pages/standard/TicketList.jsx";
+import Tickets from "@/pages/dashboard/Tickets.jsx";
+import {FaCar} from "react-icons/fa6";
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -33,17 +44,29 @@ export const routes = [
         element: <Profile />,
       },
       {
-        icon: <TableCellsIcon {...icon} />,
-        name: "tables",
-        path: "/tables",
-        element: <Tables />,
+        icon: <LuCircleParking  {...icon}/>,
+        name: "Stations",
+        path: "/stations",
+        element: <StationList />,
       },
-      // {
-      //   icon: <InformationCircleIcon {...icon} />,
-      //   name: "notifications",
-      //   path: "/notifications",
-      //   element: <Notifications />,
-      // },
+      {
+        icon: <IoCarSportSharp {...icon} />,
+        name: "Vehicles",
+        path: "/vehicles",
+        element: <ClientVehiclesList/>,
+      },
+      {
+        icon: <FaRegBookmark {...icon} />,
+        name: "Booking Reequests",
+        path: "/bookings",
+        element: <BookingRequests/>,
+      },
+      {
+        icon: <LuTicketsPlane  {...icon} />,
+        name: "Tickets",
+        path: "/all",
+        element: <Tickets/>,
+      },
     ],
   },
   {
@@ -63,16 +86,28 @@ export const routes = [
         element: <Profile />,
       },
       {
-        icon: <TableCellsIcon {...icon} />,
-        name: "Stations",
-        path: "/stations",
-        element: <Stations/>,
+        icon: <FaCar  {...icon} />,
+        name: "Vehicles",
+        path: "/vehicles",
+        element: <ClientVehiclesList/>,
+      },
+      {
+        icon: <RxSpaceEvenlyVertically {...icon} />,
+        name: "Parking Spots",
+        path: "/slots",
+        element: <AvailableSlotsTable/>,
       },
       {
         icon: <TableCellsIcon {...icon} />,
         name: "Booking",
         path: "/bookings",
         element: <Booking/>,
+      },
+      {
+        icon: <LuTicketsPlane  {...icon} />,
+        name: "My Tickets",
+        path: "/tickets",
+        element: <TicketList/>,
       },
     ],
   },

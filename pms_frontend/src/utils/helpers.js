@@ -59,9 +59,51 @@ export async function updateData(url,data,token) {
     }
 }
 
+export async function deleteData(url,data,token) {
+    try {
+        axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+        const response = await axios.delete(url);
+
+        return {data:response.data,message:response.data.message};
+    } catch (error) {
+        let errorMessage = "Server is down";
+
+        if (error.response && error.response.data && error.response.data.message) {
+            errorMessage = error.response.data.message;
+        } else if (error.message) {
+            errorMessage = error.message;
+        }
+
+        return { error: errorMessage, data: -1 };
+    }
+}
+
+
+export async function patchData(url,data,token) {
+    try {
+        axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+        const response = await axios.patch(url);
+
+        return {data:response.data,message:response.data.message};
+    } catch (error) {
+        let errorMessage = "Server is down";
+
+        if (error.response && error.response.data && error.response.data.message) {
+            errorMessage = error.response.data.message;
+        } else if (error.message) {
+            errorMessage = error.message;
+        }
+
+        return { error: errorMessage, data: -1 };
+    }
+}
+
 export function handleLogout(tokenName){
     localStorage.removeItem(tokenName);
     window.location = "/";
+}
+export function returnToken(tokenName){
+    return localStorage.getItem(tokenName||"pms_auth_token");
 }
 
 export const decodeToken =() => {

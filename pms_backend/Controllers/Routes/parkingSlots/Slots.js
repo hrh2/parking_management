@@ -3,6 +3,7 @@ const {verifyToken} = require("../../../Middlewares/verifyToken");
 const {isAdmin} = require("../../Utils/helper");
 const {ParkingStation} = require("../../../Models/ParkingStation");
 const {ParkingSlot} = require("../../../Models/ParkingSlot");
+const mongoose = require("mongoose");
 const router = express.Router();
 
 
@@ -50,6 +51,12 @@ router.get('/', verifyToken, async (req, res) => {
     try {
         const { stationId, page = 1, limit = 10 } = req.query;
 
+        if(stationId){
+            if (!mongoose.Types.ObjectId.isValid(stationId)) {
+                return res.status(400).json({ message: 'Invalid Station ID' });
+            }
+        }
+
         const skip = (parseInt(page) - 1) * parseInt(limit);
         const filter = {
             isAvailable: true,
@@ -78,6 +85,11 @@ router.get('/', verifyToken, async (req, res) => {
 // 3. GET /slots/:id - Get a specific slot
 router.get('/:id', verifyToken, async (req, res) => {
     try {
+
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(400).json({ message: 'Invalid Parking Slot ID' });
+        }
+
         const slot = await ParkingSlot.findById(req.params.id)
             .populate('station', 'name location ratePerMinute');
 
@@ -96,6 +108,14 @@ router.put('/:id', verifyToken, async (req, res) => {
     try {
         if (!isAdmin(req)) {
             return res.status(403).json({ message: 'Only admins can update slots.' });
+        }
+
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(400).json({ message: 'Invalid Parking Slot ID' });
+        }
+
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(400).json({ message: 'Invalid Station ID' });
         }
 
         const { slotNumber, isAvailable } = req.body;
@@ -121,6 +141,10 @@ router.delete('/:id', verifyToken, async (req, res) => {
     try {
         if (!isAdmin(req)) {
             return res.status(403).json({ message: 'Only admins can delete slots.' });
+        }
+
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(400).json({ message: 'Invalid Parking Slot ID' });
         }
 
         const slot = await ParkingSlot.findById(req.params.id);

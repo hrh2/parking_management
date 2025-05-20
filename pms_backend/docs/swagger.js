@@ -22,12 +22,12 @@ const annotations = {
     ],
     'tags':[
         {name:"Users Auth"},
-        {name:'Users'},
         {name:'Parking Station Management'},
         {name:'Vehicles'},
         {name:'Bookings'},
         {name:'Parking Slots'},
         {name:'Tickets'},
+        {name:'Admin'},
     ],
     components: {
         securitySchemes: {
@@ -125,6 +125,69 @@ const annotations = {
         },
     },
     paths: {
+        '/v1/api/admin/reports': {
+            get: {
+                tags: ["Admin"],
+                summary: 'Get admin dashboard reports',
+                description: 'Returns various statistics for the admin dashboard including user counts, revenue, vehicles, etc.',
+                security: [
+                    {
+                        bearerAuth: []
+                    }
+                ],
+                responses: {
+                    '200': {
+                        description: 'Report data retrieved successfully',
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    type: 'object',
+                                    properties: {
+                                        totalUsers: {
+                                            type: 'number',
+                                            description: 'Total number of users'
+                                        },
+                                        newUsers: {
+                                            type: 'number',
+                                            description: 'Number of new users registered today'
+                                        },
+                                        verifiedUsers: {
+                                            type: 'number',
+                                            description: 'Number of verified users'
+                                        },
+                                        totalRevenue: {
+                                            type: 'number',
+                                            description: 'Total revenue from all tickets'
+                                        },
+                                        monthlyRevenue: {
+                                            type: 'object',
+                                            description: 'Revenue for each month'
+                                        },
+                                        totalVehicles: {
+                                            type: 'number',
+                                            description: 'Total number of vehicles'
+                                        },
+                                        newClientsToday: {
+                                            type: 'number',
+                                            description: 'Number of new clients registered today'
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    '401': {
+                        description: 'Unauthorized - Token is missing or invalid'
+                    },
+                    '403': {
+                        description: 'Forbidden - User is not an admin'
+                    },
+                    '500': {
+                        description: 'Internal Server Error'
+                    }
+                }
+            }
+        },
         '/v1/api/bookings': {
             post: {
                 tags: ["Bookings"],
@@ -202,6 +265,39 @@ const annotations = {
             get: {
                 tags: ["Bookings"],
                 summary: 'Get all bookings',
+                description: 'Endpoint to retrieve all bookings',
+                security: [
+                    {
+                        bearerAuth: []
+                    }
+                ],
+                responses: {
+                    '200': {
+                        description: 'List of bookings retrieved successfully',
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    type: 'array',
+                                    items: {
+                                        $ref: '#/components/schemas/Booking'
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    '401': {
+                        description: 'Unauthorized - User not authenticated'
+                    },
+                    '500': {
+                        description: 'Internal Server Error'
+                    }
+                }
+            }
+        },
+        '/v1/api/bookings/my':{
+            get:{
+                tags: ["Bookings"],
+                summary: 'Get all bookings for a logged in user',
                 description: 'Endpoint to retrieve all bookings',
                 security: [
                     {

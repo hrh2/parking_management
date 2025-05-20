@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { servers } from "../../../utils/api";
 import { deleteData, fetchData } from "../../../utils/helpus";
