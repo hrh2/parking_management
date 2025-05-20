@@ -3,6 +3,108 @@
 ## System Overview
 The Parking Management System (PMS) backend is a Node.js application built with Express.js that provides APIs for managing parking stations, slots, bookings, vehicles, and tickets. It follows the MVC (Model-View-Controller) architecture pattern and uses MongoDB as its database.
 
+## Entity Relationship Diagram
+
+```pgsql
++-----------------+      1:N       +----------------+
+|     User        |<---------------|    Vehicle     |
++-----------------+                +----------------+
+| _id (PK)        |                | _id (PK)       |
+| firstName       |                | licensePlate   |
+| lastName        |                | model          |
+| email           |                | color          |
+| phone           |                | sits           |
+| password        |                | ownerId (FK)   |
+| role            |                +----------------+
+| isVerified      |
++-----------------+
+|1
+|
+|1
+v
++-----------------+     1:N      +----------------+
+|    Booking      |<-------------|   ParkingSlot  |
++-----------------+              +----------------+
+| _id (PK)        |              | _id (PK)       |
+| user (FK)       |              | slotNumber     |
+| slot (FK)       |              | isAvailable    |
+| vehicle (FK)    |              | station (FK)   |
+| startTime       |              +----------------+
+| endTime         |
+| status          |
++-----------------+
+       ^
+       |1
+       |
++-----------------+      1:N     +----------------+
+|    Ticket       |<-------------|    Booking     |
++-----------------+              +----------------+
+| _id (PK)        |              | _id (PK)       |
+| user (FK)       |              |                |
+| vehicle (FK)    |              +----------------+
+| slot (FK)       |
+| startTime       |
+| endTime         |
+| durationMinutes |
+| amount          |
+| isPaid          |
++-----------------+
+
++-----------------+      1:N      +-----------------+
+| ParkingStation  |<--------------|   ParkingSlot   |
++-----------------+               +-----------------+
+| _id (PK)        |               | _id (PK)        |
+| name            |               | slotNumber      |
+| location        |               | isAvailable     |
+| ratePerMinute   |               | station (FK)    |
++-----------------+               +-----------------+
+
++-----------------+
+| OneTimeCode     |
++-----------------+
+| _id (PK)        |
+| email           |
+| code            |
+| expiresAt       |
+| isUsed          |
++-----------------+
+```
+## Data Flow Diagram (DFD)
+```
+                +----------------------+
+                |     Client App       |
+                +----------------------+
+                          |
+                          v
+                +----------------------+
+                |   Express Server     |
+                | (Routes + Middleware)|
+                +----------------------+
+                          |
+                          v
+        +-----------------------------------------+
+        |                Controllers              |
+        |    - AuthController                     |
+        |    - BookingController                  |
+        |    - TicketController                   |
+        |    - VehicleController                  |
+        +-----------------------------------------+
+                          |
+                          v
+        +-----------------------------------------+
+        |                Models                   |
+        | - User, Vehicle, Booking, Ticket        |
+        | - ParkingSlot, ParkingStation           |
+        | - OneTimeCode                           |
+        +-----------------------------------------+
+                          |
+                          v
+                   +------------+
+                   |  MongoDB   |
+                   +------------+
+
+
+```
 ## Architecture Diagram
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐

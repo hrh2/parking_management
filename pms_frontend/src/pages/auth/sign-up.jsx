@@ -41,7 +41,7 @@ export function SignUp() {
       } else {
         showPopup(result.message);
         setTimeout(() => {
-          window.location = "/auth/sign-in";
+          navigate(`/auth/otp/${data.email}`)
         }, 3000);
       }
     } catch (error) {
