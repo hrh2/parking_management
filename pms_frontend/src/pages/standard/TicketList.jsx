@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import {DataGrid} from "@mui/x-data-grid";
 import {usePopup} from "@/context/PopupContext.jsx";
-import {fetchData, returnToken} from "@/utils/helpers.js";
+import {fetchData, patchData, returnToken} from "@/utils/helpers.js";
 import {servers} from "@/configs/server_api.js";
+import {Button} from "@mui/material";
 
 function TicketList() {
     const [tickets, setTickets] = useState([]);
@@ -30,6 +31,23 @@ function TicketList() {
         }
     };
 
+    const completeRequest = async (id) => {
+        setLoading(true);
+        try {
+            const result = await patchData(`${servers.default}/tickets/pay/${id}`,"", returnToken());
+            if (result.error) {
+                showPopup(result.error);
+            } else {
+                fetchRequests();
+            }
+        } catch (error) {
+            showPopup("Failed to fetch practices.");
+        }finally {
+            setLoading(false)
+        }
+    };
+
+
     // Flattened rows for each slot with station info
     const rows = tickets.map((request) => ({
         id: request._id,
@@ -52,6 +70,23 @@ function TicketList() {
         { field: 'duration', headerName: 'Duration', width: 130 },
         { field: 'amount', headerName: 'Amount(FRW)', width: 130 },
         { field: 'status', headerName: 'Payment Status', width: 110 },
+        {
+            field: "action",
+            headerName: "Action",
+            width:300,
+            renderCell: (params) => (
+                <div className={`flex gap-4 justify-between`}>
+                    <Button
+                        variant="contained"
+                        color="success"
+                        onClick={() => completeRequest(params.row.id)}
+                        disabled={params.row.status !== "Not Paid"}
+                    >
+                        Pay
+                    </Button>
+                </div>
+            ),
+        },
     ];
     return (
         <div style={{ height: 600, width: '100%' }}>

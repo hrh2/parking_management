@@ -5,13 +5,14 @@ import {
   Button,
   Typography,
 } from "@material-tailwind/react";
-import { Link } from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import { usePopup } from "@/context/PopupContext.jsx";
 import { sendData } from "@/utils/helpers.js";
 import { servers } from "@/configs/server_api.js";
 import { useState } from "react";
 
 export function SignUp() {
+  const navigate = useNavigate();
   const { showPopup } = usePopup();
   const [loader, setLoader] = useState(false);
 
@@ -39,10 +40,7 @@ export function SignUp() {
       if (result.error) {
         showPopup(result.error);
       } else {
-        showPopup(result.message);
-        setTimeout(() => {
-          navigate(`/auth/otp/${data.email}`)
-        }, 3000);
+        navigate(`/auth/otp/${data.email}`);
       }
     } catch (error) {
       showPopup(error.message);

@@ -6,6 +6,7 @@ const {User} = require("../../../Models/User");
 const {isAdmin} = require("../../Utils/helper");
 const {extractUserIdFromToken} = require("../../Utils/extractors");
 const {sendEmail} = require("../../Utils/Mailer");
+const mongoose = require("mongoose");
 const router = express.Router();
 
 
@@ -83,7 +84,7 @@ router.patch('/pay/:id', verifyToken, async (req, res) => {
                             <li>Start Time: ${new Date(ticket.startTime).toLocaleString()}</li>
                             <li>End Time: ${new Date(ticket.endTime).toLocaleString()}</li>
                             <li>Duration: ${ticket.durationMinutes} minutes</li>
-                            <li>Amount Paid: $${ticket.amount.toFixed(2)} FRW</li>
+                            <li>Amount Paid: ${ticket.amount.toFixed(2)} FRW</li>
                         </ul>
                         <p>Thank you for using our parking service!</p>
                     `
@@ -92,7 +93,7 @@ router.patch('/pay/:id', verifyToken, async (req, res) => {
 
         res.status(200).json({ message: '✅ Ticket paid successfully', ticket });
     } catch (err) {
-        res.status(500).json({ message: 'Internal server error', error: err.message });
+        res.status(500).json({ message: err.message });
     }
 });
 

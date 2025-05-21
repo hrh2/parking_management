@@ -46,7 +46,7 @@ router.post('/', verifyToken, async (req, res) => {
         await Promise.all(slotPromises);
         await station.save();
 
-        res.status(201).json({ message: 'Parking station created with slots.', station });
+        res.status(201).json({ message: 'success: Parking station created with slots.', station });
 
     } catch (error) {
         res.status(500).json({ message: 'Internal server error.', error: error.message });

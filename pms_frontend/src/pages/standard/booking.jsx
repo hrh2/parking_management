@@ -31,6 +31,22 @@ export function Booking() {
         fetchRequests();
     }, []);
 
+    const completeRequest = async (id) => {
+        setLoading(true);
+        try {
+            const result = await patchData(`${servers.default}/bookings/complete/${id}`,"", returnToken());
+            if (result.error) {
+                showPopup(result.error);
+            } else {
+                fetchRequests();
+            }
+        } catch (error) {
+            showPopup("Failed to fetch practices.");
+        }finally {
+            setLoading(false)
+        }
+    };
+
     // Columns for the DataGrid
     const columns = [
         { field: "id", headerName: "Request ID", width: 50 },
@@ -39,6 +55,23 @@ export function Booking() {
         { field: "startTime", headerName: "Start Time", width: 100 },
         { field: "slot", headerName: "Parking SPOT", width: 350 },
         { field: "status", headerName: "Status", width: 150 },
+        // {
+        //     field: "action",
+        //     headerName: "Action",
+        //     width:300,
+        //     renderCell: (params) => (
+        //         <div className={`flex gap-4 justify-between`}>
+        //             <Button
+        //                 variant="contained"
+        //                 color="success"
+        //                 onClick={() => completeRequest(params.row.id)}
+        //                 disabled={params.row.status !== "APPROVED"}
+        //             >
+        //                 Exiting Car
+        //             </Button>
+        //         </div>
+        //     ),
+        // },
     ];
 
     // Map request data to rows

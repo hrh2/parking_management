@@ -42,7 +42,7 @@ router.post('/', verifyToken, async (req, res) => {
 
         await booking.save();
 
-        res.status(201).json({ message: 'Booking created and pending approval.', booking });
+        res.status(201).json({ message: 'success: Booking created and pending approval.', booking });
     } catch (err) {
         res.status(500).json({ message: 'Internal server error', error: err.message });
     }

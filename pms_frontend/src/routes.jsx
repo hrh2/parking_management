@@ -44,6 +44,12 @@ export const routes = [
         element: <Profile />,
       },
       {
+        icon: <RxSpaceEvenlyVertically {...icon} />,
+        name: "Parking Spots",
+        path: "/slots",
+        element: <AvailableSlotsTable/>,
+      },
+      {
         icon: <LuCircleParking  {...icon}/>,
         name: "Stations",
         path: "/stations",
@@ -57,15 +63,21 @@ export const routes = [
       },
       {
         icon: <FaRegBookmark {...icon} />,
-        name: "Booking Reequests",
+        name: "Booking Requests",
         path: "/bookings",
         element: <BookingRequests/>,
       },
       {
         icon: <LuTicketsPlane  {...icon} />,
-        name: "Tickets",
+        name: "All Tickets",
         path: "/all",
         element: <Tickets/>,
+      },
+      {
+        icon: <LuTicketsPlane  {...icon} />,
+        name: "My Tickets",
+        path: "/tickets",
+        element: <TicketList/>,
       },
     ],
   },

@@ -5,7 +5,7 @@ import {
   CardHeader,
   CardBody,
   Progress,
-  Spinner,
+  Spinner, Button,
 } from "@material-tailwind/react";
 import { StatisticsCard } from "@/widgets/cards";
 import { StatisticsChart } from "@/widgets/charts";
@@ -21,8 +21,19 @@ import {
   UserCircleIcon,
   TruckIcon,
 } from "@heroicons/react/24/solid";
+import {usePopup} from "@/context/PopupContext.jsx";
+import {AddVehicleForm} from "@/widgets/cards/AddVehicle.jsx";
+import {AddStationForm} from "@/widgets/cards/AddStation.jsx";
 
 export function Home() {
+  const { showPopup } = usePopup();
+
+  const handleClick = () => {
+    showPopup(
+        <AddStationForm/>
+    );
+  };
+
   const [reportData, setReportData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -212,6 +223,15 @@ export function Home() {
         </div>
       ) : (
         <>
+          <div className="flex justify-start pr-6">
+            <Button
+                color="gray"
+                className="rounded-full"
+                onClick={handleClick}
+            >
+              Add Vehicle
+            </Button>
+          </div>
           {/* Statistics Cards */}
           <div className="mb-12 grid gap-y-10 gap-x-6 md:grid-cols-2 xl:grid-cols-4">
             {generateStatisticsCards().map(({ icon, title, value, footer, color }) => (
